@@ -4,3 +4,4 @@
 .idea/
 .env
 /public/bower_components
+src/constants.js

@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const User = require("../models/user");
 const bcrypt = require('bcrypt');
+const redis = require('redis');
+const jwt = require('jsonwebtoken');
+const DBClient = redis.createClient({
+    host: 'localhost', // Redis server host
+    port: 6379, // Redis server port
+});
 
 router.post('/register', (req, res) => {
     const { name, email, password } = req.body;
@@ -63,6 +69,17 @@ router.post('/login', (req, res) => {
             }
         });
     });
+});
+
+router.get('/verifytoken', (req, res) => {
+    const { token } = req.body;
+    jwt.verify(token, 'secretKey', (err, decoded) => {
+        if (err) {
+          console.error('Token verification failed:', err.message);
+        } else {
+          console.log('Decoded Payload:', decoded);
+        }
+      });
 });
 
 module.exports = router;
