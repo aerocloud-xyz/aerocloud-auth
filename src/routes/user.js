@@ -2,12 +2,15 @@ const express = require('express');
 const router = express.Router();
 const User = require("../models/user");
 const bcrypt = require('bcrypt');
-const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const DBClient = redis.createClient({
+const constants  = require('../constants')
+const redis = require('redis');
+
+const client = redis.createClient({
     host: 'localhost', // Redis server host
     port: 6379, // Redis server port
-});
+    legacyMode: true 
+  });
 
 router.post('/register', (req, res) => {
     const { name, email, password } = req.body;
@@ -32,9 +35,12 @@ router.post('/register', (req, res) => {
 
                     const newUser = new User({
                         name: name,
+                        username: name,
                         email: email,
                         password: hash,
-                        userid: Buffer.from(Date.now().toString()).toString('base64')
+                        userid: Buffer.from(Date.now().toString()).toString('base64'),
+                        isVerified: false,
+                        role: 'default'
                     });
                     newUser.save()
                         .then((value) => {
@@ -51,7 +57,8 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
-    User.findOne({ email: email }).exec((err, user) => {
+    
+    User.findOne({ email: email }, (err, user) => {
         if (err) {
             return res.status(500).json({ error: "Internal server error." });
         }
@@ -63,7 +70,13 @@ router.post('/login', (req, res) => {
                 return res.status(500).json({ error: 'Internal server error' });
             }
             if (isMatch) {
-                return res.status(200).json({ user: user });
+                const sessionPayload = {
+                    userId: user.userid
+                };
+                const expiresIn = '1h';
+                const sessionToken = jwt.sign(sessionPayload, constants.JWT_SECRET, { expiresIn });
+                console.log(`Succesfully logged in user: ${user.name}, and generated token: ${sessionToken}`)
+                return res.status(200).json({ user: user, token: sessionToken });
             } else {
                 return res.status(401).json({ error: 'Wrong password' });
             }
@@ -71,13 +84,15 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.get('/verifytoken', (req, res) => {
+
+router.post('/verifytoken', (req, res) => {
     const { token } = req.body;
-    jwt.verify(token, 'secretKey', (err, decoded) => {
+    jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
         if (err) {
-          console.error('Token verification failed:', err.message);
+          return res.status(401).json({ error: err });
         } else {
           console.log('Decoded Payload:', decoded);
+          return res.status(200).json({ data: decoded });
         }
       });
 });

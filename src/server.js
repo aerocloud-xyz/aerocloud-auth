@@ -4,7 +4,6 @@ const morgan = require('morgan');
 const cors = require('cors');
 const redis = require('redis');
 const app = express();
-
 // Mongoose
 mongoose.connect('mongodb://localhost:27017/accounts', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to accounts database.'))

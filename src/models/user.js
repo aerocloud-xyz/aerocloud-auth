@@ -23,7 +23,21 @@ isVerified :{
 userid :{
     type  :  String,
     require  :  true
+},
+//default or administrator
+role :{
+    type  :  String,
+    require  :  true
+},
+isVerified :{
+    type  :  Boolean,
+    require  :  true
+},
+username :{
+    type  :  String,
+    require  :  false
 }
+
 });
 const User= mongoose.model('User',UserSchema);
 
