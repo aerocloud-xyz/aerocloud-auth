@@ -97,4 +97,7 @@ router.post('/verifytoken', (req, res) => {
       });
 });
 
+router.get('/api', (req, res) => {
+    res.status(200).json({ status: 'API OK' });
+});
 module.exports = router;
