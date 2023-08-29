@@ -4,13 +4,6 @@ const User = require("../models/user");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const constants  = require('../constants')
-const redis = require('redis');
-
-const client = redis.createClient({
-    host: 'localhost', // Redis server host
-    port: 6379, // Redis server port
-    legacyMode: true 
-  });
 
 router.post('/register', (req, res) => {
     const { name, email, password } = req.body;
