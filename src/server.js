@@ -4,7 +4,9 @@ const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
 // Mongoose
-mongoose.connect('mongodb://localhost:27017/accounts', { useNewUrlParser: true, useUnifiedTopology: true })
+//if DEV environment(no docker): 
+//mongoose.connect('mongodb://localhost:27017/accounts', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://mongodb:27017/accounts', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to accounts database.'))
     .catch((err) => console.log(err));
 

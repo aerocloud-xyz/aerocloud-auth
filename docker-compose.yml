@@ -1,0 +1,14 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+  nodeapp:
+    build: .
+    container_name: antonio0806/s0rcerer-authentication:1.0.0
+    ports:
+      - '3001:3001'
+    depends_on:
+      - mongodb
