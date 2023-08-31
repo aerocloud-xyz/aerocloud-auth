@@ -24,5 +24,5 @@ app.use('/users', require('./routes/user'));
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`HTTP Server is running on port ${port}`);
 });
