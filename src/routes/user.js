@@ -90,6 +90,30 @@ router.post('/verifytoken', (req, res) => {
       });
 });
 
+router.delete('/deleteUser', (req, res) => {
+    const { token } = req.body
+    jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ error: err});
+        } else {
+            User.findOne({ userid: decoded.userId }).exec((err, user) => {
+                if (err) {
+                    return res.status(401).json({ error: 'User deleted or does not exist.'})
+                } else {
+                    User.deleteOne({ userid: decoded.userId }, (err) => {
+                        if (err) {
+                            return res.status(500).json({ error: err});
+                        } else {
+                            console.log(`User with the ID: ${decoded.userId} has been deleted successfully.`);
+                            return res.status(200).json({ status: 'User deleted'});
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+
 router.get('/api', (req, res) => {
     res.status(200).json({ status: 'API OK' });
 });
