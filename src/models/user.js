@@ -36,6 +36,10 @@ isVerified :{
 username :{
     type  :  String,
     require  :  false
+},
+integrations :{
+    type  :  JSON,
+    require  :  false
 }
 
 });

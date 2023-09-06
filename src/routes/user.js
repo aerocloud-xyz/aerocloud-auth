@@ -33,7 +33,8 @@ router.post('/register', (req, res) => {
                         password: hash,
                         userid: Buffer.from(Date.now().toString()).toString('base64'),
                         isVerified: false,
-                        role: 'default'
+                        role: 'default',
+                        integrations: {}
                     });
                     newUser.save()
                         .then((value) => {
