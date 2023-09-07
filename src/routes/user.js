@@ -4,6 +4,8 @@ const User = require("../models/user");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const constants  = require('../constants')
+const sendNotification = require('../notification');
+
 
 router.post('/register', (req, res) => {
     const { name, email, password } = req.body;
@@ -34,10 +36,11 @@ router.post('/register', (req, res) => {
                         userid: Buffer.from(Date.now().toString()).toString('base64'),
                         isVerified: false,
                         role: 'default',
-                        integrations: {}
+                        integrations: '{}'
                     });
                     newUser.save()
                         .then((value) => {
+                            sendNotification(`Succesfully registered in user: ${newUser.name}!`);
                             return res.status(200).json(newUser.toJSON());
                         })
                         .catch((error) => {
@@ -69,7 +72,8 @@ router.post('/login', (req, res) => {
                 };
                 const expiresIn = '1h';
                 const sessionToken = jwt.sign(sessionPayload, constants.JWT_SECRET, { expiresIn });
-                console.log(`Succesfully logged in user: ${user.name}, and generated token: ${sessionToken}`)
+                console.log(`Succesfully logged in user: ${user.name}, and generated token: ${sessionToken}`);
+                sendNotification(`Succesfully logged in user: ${user.name}!`);
                 return res.status(200).json({ user: user, token: sessionToken });
             } else {
                 return res.status(401).json({ error: 'Wrong password' });
@@ -116,6 +120,7 @@ router.delete('/deleteUser', (req, res) => {
 });
 
 router.get('/api', (req, res) => {
+    sendNotification('API Status checked-OK')
     res.status(200).json({ status: 'API OK' });
 });
 module.exports = router;

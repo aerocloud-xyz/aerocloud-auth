@@ -38,7 +38,7 @@ username :{
     require  :  false
 },
 integrations :{
-    type  :  JSON,
+    type  :  String,
     require  :  false
 }
 
