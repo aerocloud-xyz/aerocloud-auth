@@ -118,6 +118,29 @@ router.delete('/deleteUser', (req, res) => {
         }
     });
 });
+router.post('/updateUsername', (req, res) => {
+    const { token, newusername } = req.body;
+    jwt.verify(token, constants.JWT_SECRET,(err,decoded)=>{
+        if(err) {
+            return res.status(401).json({ error: err});
+        } else {
+            User.findOne({ userid: decoded.userId }).exec((err, user) => {
+                if(err) {
+                    return res.status(401).json({ error: 'User deleted or does not exist' });
+                } else {
+                    User.updateOne({ userid: decoded.userId }, { username: newusername } ).exec((err) => {
+                        if(err) {
+                            return res.status(500).json({ error: 'Internal server error' });
+                        } else {
+                            sendNotification(`User ${user.name} changed their username to ${newusername}`);
+                            return res.status(200).json({ status: 'Username changed' });
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
 
 router.get('/api', (req, res) => {
     sendNotification('API Status checked-OK')
