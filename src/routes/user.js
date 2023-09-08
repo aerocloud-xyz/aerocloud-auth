@@ -57,14 +57,14 @@ router.post('/login', (req, res) => {
     
     User.findOne({ email: email }, (err, user) => {
         if (err) {
-            return res.status(500).json({ error: "Internal server error." });
+            return res.status(500).json({ error: err });
         }
         if (!user) {
             return res.status(409).json({ error: 'User does not exist.' });
         }
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
-                return res.status(500).json({ error: 'Internal server error' });
+                return res.status(500).json({ error: err });
             }
             if (isMatch) {
                 const sessionPayload = {
@@ -81,7 +81,6 @@ router.post('/login', (req, res) => {
         });
     });
 });
-
 
 router.post('/verifytoken', (req, res) => {
     const { token } = req.body;
