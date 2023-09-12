@@ -59,7 +59,6 @@ router.post("/register", (req, res) => {
     }
   });
 });
-
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -93,7 +92,6 @@ router.post("/login", (req, res) => {
     });
   });
 });
-
 router.post("/verifytoken", (req, res) => {
   const { token } = req.body;
   jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
@@ -112,7 +110,6 @@ router.post("/verifytoken", (req, res) => {
     }
   });
 });
-
 router.delete("/deleteUser", (req, res) => {
   const { token } = req.body;
   jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
@@ -169,10 +166,5 @@ router.post("/updateUsername", (req, res) => {
       });
     }
   });
-});
-
-router.get("/api", (req, res) => {
-  sendNotification("API Status checked-OK");
-  res.status(200).json({ status: "API OK" });
 });
 module.exports = router;

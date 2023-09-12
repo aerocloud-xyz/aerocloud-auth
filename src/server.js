@@ -8,11 +8,13 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 // Mongoose
 //if DEV environment(no docker):
 mongoose
-  .connect("mongodb://localhost:27017/accounts", {
+  .connect(`mongodb://${constants.MONGO_SERVER}/users`, {
+    pass: constants.MONGO_PASSWORD,
+    user: constants.MONGO_USER,
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  //mongoose.connect('mongodb://mongodb:27017/accounts', { useNewUrlParser: true, useUnifiedTopology: true })
+  //mongoose.connect('mongodb://mongodb:27017/users', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to accounts database."))
   .catch((err) => console.log(err));
 app.use(morgan("dev"));
@@ -45,6 +47,7 @@ app.use("/ssh", conditionMiddleware);
 
 // Routes
 app.use("/users", require("./routes/user"));
+app.use("/api", require("./routes/api"));
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`HTTP Server is running on port ${port} v1.0 hell nahhhhh`);
