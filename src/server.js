@@ -8,9 +8,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 // Mongoose
 //if DEV environment(no docker):
 mongoose
-  .connect(`mongodb://${constants.MONGO_SERVER}/users`, {
-    pass: constants.MONGO_PASSWORD,
-    user: constants.MONGO_USER,
+  .connect(`mongodb+srv://${constants.MONGO_USER}:${constants.MONGO_PASSWORD}@${constants.MONGO_SERVER}/?retryWrites=true&w=majority`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
