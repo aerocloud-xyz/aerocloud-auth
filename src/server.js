@@ -32,7 +32,7 @@ const targetServerProxy = createProxyMiddleware({
   target: `http://localhost:2224/ssh/host/${constants.SSH_SERVER}?port=22`,
   changeOrigin: true,
 });
-
+          
 const conditionMiddleware = (req, res, next) => {
   if (true) {
     return targetServerProxy(req, res, next);
@@ -49,4 +49,10 @@ app.use("/api", require("./routes/api"));
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`HTTP Server is running on port ${port} v1.0 hell nahhhhh`);
+  client.index({
+    index: 'logs',
+    document: {
+      message: 'Authentication server started'
+    }
+  });
 });
