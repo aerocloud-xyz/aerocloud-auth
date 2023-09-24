@@ -5,12 +5,14 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const constants = require("../constants");
 const sendNotification = require("../notification");
+const logger = require("../logger");
 
 router.post("/register", (req, res) => {
   const { name, email, password } = req.body;
   console.log(req.body);
   User.findOne({ email: email }).exec((err, user) => {
     if (err) {
+      logger(`Database error: ${err}`, 'ERROR');
       return res.status(500).json({ error: "Internal server error." });
     }
 
@@ -19,6 +21,7 @@ router.post("/register", (req, res) => {
     } else {
       bcrypt.genSalt(10, (err, salt) => {
         if (err) {
+          logger(`Bcrypt error: ${err}`, 'ERROR');
           return res
             .status(500)
             .json({ error: `Internal server error: ${err}` });
@@ -50,6 +53,7 @@ router.post("/register", (req, res) => {
               return res.status(200).json(newUser.toJSON());
             })
             .catch((error) => {
+              logger(`Database error: ${err}`, 'ERROR');
               return res
                 .status(500)
                 .json({ error: `Internal server error: ${error}` });
@@ -64,6 +68,7 @@ router.post("/login", (req, res) => {
 
   User.findOne({ email: email }, (err, user) => {
     if (err) {
+      logger(`Database error: ${err}`, 'ERROR');
       return res.status(500).json({ error: err });
     }
     if (!user) {
@@ -71,6 +76,7 @@ router.post("/login", (req, res) => {
     }
     bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) {
+        logger(`Bcrypt error: ${err}`, 'ERROR');
         return res.status(500).json({ error: err });
       }
       if (isMatch) {
@@ -101,6 +107,7 @@ router.post("/verifytoken", (req, res) => {
       var UserID = decoded.userId;
       User.findOne({ userid: UserID }, (err, user) => {
         if (err) {
+          logger(`Database error: ${err}`, 'ERROR');
           return res.status(500).json({ error: err });
         } else {
           console.log("Decoded Payload:", decoded);
@@ -118,14 +125,17 @@ router.delete("/deleteUser", (req, res) => {
     } else {
       User.findOne({ userid: decoded.userId }).exec((err, user) => {
         if (err) {
+          logger(`Database error: ${err}`, 'ERROR');
           return res
             .status(401)
             .json({ error: "User deleted or does not exist." });
         } else {
           User.deleteOne({ userid: decoded.userId }, (err) => {
             if (err) {
+              logger(`Database error: ${err}`, 'ERROR');
               return res.status(500).json({ error: err });
             } else {
+              logger(`User with the ID: ${decoded.userId} deleted successfully.`, 'INFO');
               console.log(
                 `User with the ID: ${decoded.userId} has been deleted successfully.`
               );
@@ -154,6 +164,7 @@ router.post("/updateUsername", (req, res) => {
             { username: newusername }
           ).exec((err) => {
             if (err) {
+              logger(`Database error: ${err}`, 'ERROR');
               return res.status(500).json({ error: "Internal server error" });
             } else {
               sendNotification(

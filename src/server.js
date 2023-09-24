@@ -1,10 +1,19 @@
+const constants = require("./constants");
+var apm = require('elastic-apm-node').start({
+  serviceName: 'authentication-sorcerer',
+  secretToken: constants.ELASTIC_APM_SECRET,
+  serverUrl: constants.ELASTIC_ENDPOINT,
+  environment: 'sorcerer',
+  logLevel: 'debug'
+})
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-const constants = require("./constants");
+const logger = require("./logger");
 const { createProxyMiddleware } = require("http-proxy-middleware");
+apm.logger.info('Authenticaion microservice v1.0 starting');
 // Mongoose
 //if DEV environment(no docker):
 mongoose
@@ -13,8 +22,9 @@ mongoose
     useUnifiedTopology: true,
   })
   //mongoose.connect('mongodb://mongodb:27017/users', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("Connected to accounts database."))
-  .catch((err) => console.log(err));
+  .then(() => logger("Connected to database", "INFO"))
+  .catch((err) => {logger("Database setup failed.", "ERROR");
+   apm.captureError(err)});
 app.use(morgan("dev"));
 app.use(cors());
 app.use(express.urlencoded({ extended: true })); // Middleware to handle URL-encoded bodies
@@ -48,11 +58,6 @@ app.use("/users", require("./routes/user"));
 app.use("/api", require("./routes/api"));
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
-  console.log(`HTTP Server is running on port ${port} v1.0 hell nahhhhh`);
-  client.index({
-    index: 'logs',
-    document: {
-      message: 'Authentication server started'
-    }
-  });
+  logger(`Http server started on port ${port}`, 'INFO');
+  apm.logger.info('http server started succesfully!');
 });

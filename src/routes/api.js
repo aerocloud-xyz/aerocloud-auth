@@ -4,6 +4,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const constants = require("../constants");
 const sendNotification = require("../notification");
+const logger = require("../logger");
 
 router.post("/getUsers", (req, res) => {
     const { token } = req.body;
@@ -19,6 +20,7 @@ router.post("/getUsers", (req, res) => {
                 if(user.role == "administrator") {
                     User.find({}, function(err, result) {
                         if(err) {
+                            logger(`Database error: ${err}`, 'ERROR');
                             return res.status(500).json({error: 'Database error'});
                         } else {
                             return res.status(200).json({data: result});
@@ -34,6 +36,7 @@ router.post("/getUsers", (req, res) => {
 });
 router.get("/", (req, res) => {
     sendNotification("API Status checked-OK");
+    logger(`API status checked with good result`, 'INFO');
     res.status(200).json({ status: "API OK" });
 });
 module.exports = router;
