@@ -16,12 +16,6 @@ const fs = require('fs');
 const logger = require("./logger");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 apm.logger.info('Authenticaion microservice v1.0 starting');
-var key = fs.readFileSync(__dirname + '/certs/selfsigned.key');
-var cert = fs.readFileSync(__dirname + ' /certs/selfsigned.crt');
-var options = {
-  key: key,
-  cert: cert
-};
 // Mongoose
 //if DEV environment(no docker):
 mongoose
