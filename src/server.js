@@ -11,9 +11,17 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
+const https = require('https');
+const fs = require('fs');
 const logger = require("./logger");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 apm.logger.info('Authenticaion microservice v1.0 starting');
+var key = fs.readFileSync(__dirname + '/certs/selfsigned.key');
+var cert = fs.readFileSync(__dirname + '/certs/selfsigned.crt');
+var options = {
+  key: key,
+  cert: cert
+};
 // Mongoose
 //if DEV environment(no docker):
 mongoose
@@ -57,7 +65,9 @@ app.use("/ssh", conditionMiddleware);
 app.use("/users", require("./routes/user"));
 app.use("/api", require("./routes/api"));
 const port = process.env.PORT || 3001;
-app.listen(port, () => {
-  logger(`Http server started on port ${port}`, 'INFO');
-  apm.logger.info('http server started succesfully!');
+var server = https.createServer(options, app);
+
+server.listen(port, () => {
+  apm.logger.info('The server has been started.');
+  logger('Server has been started on port ' + port);
 });

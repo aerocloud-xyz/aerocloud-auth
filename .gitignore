@@ -5,3 +5,5 @@
 .env
 /public/bower_components
 src/constants.js
+src/certs/selfsigned.crt
+src/certs/selfsigned.key
