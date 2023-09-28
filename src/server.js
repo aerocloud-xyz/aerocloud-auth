@@ -17,7 +17,7 @@ const logger = require("./logger");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 apm.logger.info('Authenticaion microservice v1.0 starting');
 var key = fs.readFileSync(__dirname + '/certs/selfsigned.key');
-var cert = fs.readFileSync(__dirname + '/certs/selfsigned.crt');
+var cert = fs.readFileSync(__dirname + ' /certs/selfsigned.crt');
 var options = {
   key: key,
   cert: cert
@@ -65,9 +65,8 @@ app.use("/ssh", conditionMiddleware);
 app.use("/users", require("./routes/user"));
 app.use("/api", require("./routes/api"));
 const port = process.env.PORT || 3001;
-var server = https.createServer(options, app);
-
-server.listen(port, () => {
-  apm.logger.info('The server has been started.');
-  logger('Server has been started on port ' + port);
+app.listen(port, () => {
+  //console.log(__dirname+'/certs/');
+  logger(`Http server started on port ${port}`, 'INFO');
+  apm.logger.info('http server started succesfully!');
 });
