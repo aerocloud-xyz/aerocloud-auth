@@ -35,7 +35,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true })); // Middleware to handle URL-encoded bodies
 app.use(express.json()); // Middleware to handle JSON bodies
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://aerocloud.xyz/"); // Update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "https://aerocloud.xyz"); // Update to match the domain you will make the request from
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
