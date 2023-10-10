@@ -12,6 +12,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const logger = require("./logger");
 const { createProxyMiddleware } = require("http-proxy-middleware");
@@ -35,7 +36,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true })); // Middleware to handle URL-encoded bodies
 app.use(express.json()); // Middleware to handle JSON bodies
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://aerocloud.xyz"); // Update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "*"); // Update to match the domain you will make the request from
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
@@ -62,7 +63,13 @@ app.use("/ssh", conditionMiddleware);
 app.use("/users", require("./routes/user"));
 app.use("/api", require("./routes/api"));
 const port = process.env.PORT || 3001;
+const porthttp = 3080;
+var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
+httpServer.listen(porthttp, () => {
+  console.log(`HTTP server listening on ${porthttp}`);
+  apm.logger.info(`HTTP Server started on ${port}`);
+});
 httpsServer.listen(port, () => {
   console.log(`HTTPS Server running on ${port}`);
   apm.logger.info(`HTTPS Server started on ${port}`);
