@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const constants = require("../constants");
 const sendNotification = require("../notification");
 const logger = require("../logger");
+const saveSession = require('../sessionSave');
 
 router.post("/register", (req, res) => {
   const { name, email, password } = req.body;
@@ -90,6 +91,8 @@ router.post("/login", (req, res) => {
         console.log(
           `Succesfully logged in user: ${user.name}, and generated token: ${sessionToken}`
         );
+        //TODO: Save the session
+        saveSession(sessionToken, '1.1.1.1', user.userid, user.role);
         sendNotification(`Succesfully logged in user: ${user.name}!`);
         return res.status(200).json({ user: user, token: sessionToken });
       } else {
