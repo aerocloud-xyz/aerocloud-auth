@@ -4,8 +4,8 @@ const sendNotification = (notificationText: string): void => {
     const url = `https://api.telegram.org/bot${constants.TG_BOT_TOKEN}/sendMessage?chat_id=${constants.CHAT_ID}&text=${notificationText}`;
 
     import('node-fetch')
-        .then((nodeFetch) => {
-            return nodeFetch.default(url, {
+        .then((module) => {
+            return module.default(url, {
                 method: "GET"
             });
         })
