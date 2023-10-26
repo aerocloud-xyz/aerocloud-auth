@@ -1,34 +1,35 @@
-const express = require("express");
-const router = express.Router();
-const User = require("../models/user");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const constants = require("../constants");
-const sendNotification = require("../notification");
-const logger = require("../logger");
-const saveSession = require('../sessionSave');
+import express, { Request, Response } from "express";
+import { Router } from "express";
+import { User, IUser } from "../models/user";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import * as constants from "../constants";
+import sendNotification from "../notification";
+import saveSession from "../sessionSave";
 
-router.post("/register", (req, res) => {
+const userrouter: Router = express.Router();
+
+userrouter.post("/register", (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   console.log(req.body);
   User.findOne({ email: email }).exec((err, user) => {
     if (err) {
-      logger(`Database error: ${err}`, 'ERROR');
+      console.log(`Database error: ${err}`, "ERROR");
       return res.status(500).json({ error: "Internal server error." });
     }
 
     if (user) {
       return res.status(409).json({ error: "User already exists." });
     } else {
-      bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.genSalt(10, (err: any, salt: string) => {
         if (err) {
-          logger(`Bcrypt error: ${err}`, 'ERROR');
+          console.log(`Bcrypt error: ${err}`, "ERROR");
           return res
             .status(500)
             .json({ error: `Internal server error: ${err}` });
         }
 
-        bcrypt.hash(password, salt, (err, hash) => {
+        bcrypt.hash(password, salt, (err: any, hash: string) => {
           if (err) {
             return res
               .status(500)
@@ -48,13 +49,11 @@ router.post("/register", (req, res) => {
           newUser
             .save()
             .then((value) => {
-              sendNotification(
-                `Succesfully registered in user: ${newUser.name}!`
-              );
+              sendNotification(`Succesfully registered user: ${newUser.name}!`);
               return res.status(200).json(newUser.toJSON());
             })
             .catch((error) => {
-              logger(`Database error: ${err}`, 'ERROR');
+              console.log(`Database error: ${err}`, "ERROR");
               return res
                 .status(500)
                 .json({ error: `Internal server error: ${error}` });
@@ -64,12 +63,13 @@ router.post("/register", (req, res) => {
     }
   });
 });
-router.post("/login", (req, res) => {
+
+userrouter.post("/login", (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  User.findOne({ email: email }, (err, user) => {
+  User.findOne({ email: email }, (err: any, user: IUser) => {
     if (err) {
-      logger(`Database error: ${err}`, 'ERROR');
+      console.log(`Database error: ${err}`, "ERROR");
       return res.status(500).json({ error: err });
     }
     if (!user) {
@@ -77,7 +77,7 @@ router.post("/login", (req, res) => {
     }
     bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) {
-        logger(`Bcrypt error: ${err}`, 'ERROR');
+        console.log(`Bcrypt error: ${err}`, "ERROR");
         return res.status(500).json({ error: err });
       }
       if (isMatch) {
@@ -91,8 +91,8 @@ router.post("/login", (req, res) => {
         console.log(
           `Succesfully logged in user: ${user.name}, and generated token: ${sessionToken}`
         );
-        //TODO: Save the session
-        saveSession(sessionToken, '1.1.1.1', user.userid, user.role);
+        // TODO: Save the session
+        saveSession(sessionToken, "1.1.1.1", user.userid, user.role);
         sendNotification(`Succesfully logged in user: ${user.name}!`);
         return res.status(200).json({ user: user, token: sessionToken });
       } else {
@@ -101,16 +101,17 @@ router.post("/login", (req, res) => {
     });
   });
 });
-router.post("/verifytoken", (req, res) => {
+
+userrouter.post("/verifytoken", (req: Request, res: Response) => {
   const { token } = req.body;
-  jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, constants.JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
       return res.status(401).json({ error: err });
     } else {
-      var UserID = decoded.userId;
-      User.findOne({ userid: UserID }, (err, user) => {
+      var UserID: string = decoded.userId;
+      User.findOne({ userid: UserID }, (err: any, user: IUser) => {
         if (err) {
-          logger(`Database error: ${err}`, 'ERROR');
+          console.log(`Database error: ${err}`, "ERROR");
           return res.status(500).json({ error: err });
         } else {
           console.log("Decoded Payload:", decoded);
@@ -120,25 +121,29 @@ router.post("/verifytoken", (req, res) => {
     }
   });
 });
-router.delete("/deleteUser", (req, res) => {
+
+userrouter.delete("/deleteUser", (req: Request, res: Response) => {
   const { token } = req.body;
-  jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, constants.JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
       return res.status(401).json({ error: err });
     } else {
-      User.findOne({ userid: decoded.userId }).exec((err, user) => {
+      User.findOne({ userid: decoded.userId }).exec((err: any) => {
         if (err) {
-          logger(`Database error: ${err}`, 'ERROR');
+          console.log(`Database error: ${err}`, "ERROR");
           return res
             .status(401)
             .json({ error: "User deleted or does not exist." });
         } else {
           User.deleteOne({ userid: decoded.userId }, (err) => {
             if (err) {
-              logger(`Database error: ${err}`, 'ERROR');
+              console.log(`Database error: ${err}`, "ERROR");
               return res.status(500).json({ error: err });
             } else {
-              logger(`User with the ID: ${decoded.userId} deleted successfully.`, 'INFO');
+              console.log(
+                `User with the ID: ${decoded.userId} deleted successfully.`,
+                "INFO"
+              );
               console.log(
                 `User with the ID: ${decoded.userId} has been deleted successfully.`
               );
@@ -150,9 +155,10 @@ router.delete("/deleteUser", (req, res) => {
     }
   });
 });
-router.post("/updateUsername", (req, res) => {
+
+userrouter.post("/updateUsername", (req: Request, res: Response) => {
   const { token, newusername } = req.body;
-  jwt.verify(token, constants.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, constants.JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
       return res.status(401).json({ error: err });
     } else {
@@ -167,13 +173,17 @@ router.post("/updateUsername", (req, res) => {
             { username: newusername }
           ).exec((err) => {
             if (err) {
-              logger(`Database error: ${err}`, 'ERROR');
+              console.log(`Database error: ${err}`, "ERROR");
               return res.status(500).json({ error: "Internal server error" });
             } else {
-              sendNotification(
-                `User ${user.name} changed their username to ${newusername}`
-              );
-              return res.status(200).json({ status: "Username changed" });
+              if (!user) {
+                return res.status(500).json({ error: "user is null" });
+              } else {
+                sendNotification(
+                  `User ${user.name} changed their username to ${newusername}`
+                );
+                return res.status(200).json({ status: "Username changed" });
+              }
             }
           });
         }
@@ -181,4 +191,5 @@ router.post("/updateUsername", (req, res) => {
     }
   });
 });
-module.exports = router;
+
+export default userrouter;
