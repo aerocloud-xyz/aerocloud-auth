@@ -4,6 +4,6 @@
 .idea/
 .env
 /public/bower_components
-src/constants.js
+src/constants.ts
 src/certs/selfsigned.crt
 src/certs/selfsigned.key

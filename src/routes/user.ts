@@ -115,7 +115,7 @@ userrouter.post("/verifytoken", (req: Request, res: Response) => {
           return res.status(500).json({ error: err });
         } else {
           console.log("Decoded Payload:", decoded);
-          return res.status(200).send(user);
+          return res.status(200).json({user: user});
         }
       });
     }
