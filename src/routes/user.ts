@@ -94,7 +94,7 @@ userrouter.post("/login", (req: Request, res: Response) => {
         // TODO: Save the session
         saveSession(sessionToken, "1.1.1.1", user.userid, user.role);
         sendNotification(`Succesfully logged in user: ${user.name}!`);
-        return res.status(200).json({ user: user, token: sessionToken });
+        return res.status(200).json({ token: sessionToken });
       } else {
         return res.status(401).json({ error: "Wrong password" });
       }
@@ -115,7 +115,7 @@ userrouter.post("/verifytoken", (req: Request, res: Response) => {
           return res.status(500).json({ error: err });
         } else {
           console.log("Decoded Payload:", decoded);
-          return res.status(200).send(user.role);
+          return res.status(200).send(user);
         }
       });
     }
