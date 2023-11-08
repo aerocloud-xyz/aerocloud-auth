@@ -5,7 +5,8 @@ COPY package*.json ./
 COPY . .
 
 RUN npm install
+RUN npm install -g nodemon
 
 EXPOSE 3001
 
-CMD [ "node", "./src/server.js" ]
+CMD [ "nodemon", "./src/server.ts" ]
