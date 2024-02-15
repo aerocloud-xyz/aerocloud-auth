@@ -5,15 +5,9 @@ import userrouter from "./routes/user"
 import apirouter from "./routes/api"
 import morgan from "morgan";
 import cors from "cors";
-import https from 'https';
 import http from 'http';
-import fs from 'fs';
-import { createProxyMiddleware } from "http-proxy-middleware";
 
 const app = express();
-const privateKey  = fs.readFileSync(__dirname + '/certs/selfsigned.key', 'utf8');
-const certificate = fs.readFileSync(__dirname + '/certs/selfsigned.crt', 'utf8');
-const credentials = { key: privateKey, cert: certificate };
 
 // Mongoose
 mongoose
@@ -42,14 +36,8 @@ app.use("/users", userrouter);
 app.use("/api", apirouter);
 
 const port = process.env.PORT || 3001;
-const porthttp = 3080;
 const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(porthttp, () => {
-  console.log(`HTTP server listening on ${porthttp}`);
-});
-
-httpsServer.listen(port, () => {
-  console.log(`HTTPS Server running on ${port}`);
+httpServer.listen(port, () => {
+  console.log(`HTTP server listening on ${port}`);
 });
