@@ -13,10 +13,5 @@ export const MONGO_PASSWORD: string = 'c455M8AIbD823YIi';
 export const MONGO_USER: string = 'sorcerer';
 export const MONGO_SERVER: string = 'cluster0.hjp4pna.mongodb.net';
 
-// Elastic
-export const ELASTIC_APM_SECRET: string = 'secrettokengoeshere';
-export const ELASTIC_ENDPOINT: string = 'http://apm-server:8200/';
-//export const ELASTIC_ENDPOINT: string = 'http://192.168.1.20:8200/';
-
 // Redis
 export const REDIS_CREDS: string = 'default:73dda21b17444eac8f5d952fe1c32d81';

@@ -1,5 +1,4 @@
 import * as constants from "./constants";
-import apm from 'elastic-apm-node';
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
 import userrouter from "./routes/user"
@@ -10,14 +9,6 @@ import https from 'https';
 import http from 'http';
 import fs from 'fs';
 import { createProxyMiddleware } from "http-proxy-middleware";
-
-apm.start({
-  serviceName: 'authentication-sorcerer',
-  secretToken: constants.ELASTIC_APM_SECRET,
-  serverUrl: constants.ELASTIC_ENDPOINT,
-  environment: 'sorcerer',
-  logLevel: 'debug',
-});
 
 const app = express();
 const privateKey  = fs.readFileSync(__dirname + '/certs/selfsigned.key', 'utf8');
@@ -31,7 +22,6 @@ mongoose
   .then(() => console.log("Connected to database", "INFO"))
   .catch((err) => {
     console.log("Database setup failed.", "ERROR");
-    apm.captureError(err);
   });
 
 app.use(morgan("dev"));
@@ -58,10 +48,8 @@ const httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(porthttp, () => {
   console.log(`HTTP server listening on ${porthttp}`);
-  apm.logger.info(`HTTP Server started on ${port}`);
 });
 
 httpsServer.listen(port, () => {
   console.log(`HTTPS Server running on ${port}`);
-  apm.logger.info(`HTTPS Server started on ${port}`);
 });
