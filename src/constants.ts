@@ -1,10 +1,6 @@
 // Secrets
 export const JWT_SECRET: string = 'a8ecadl0zp1eca5padl0';
 
-// Telegram notifications
-export const TG_BOT_TOKEN: string = '6211091058:AAEqTVQQPUiLMO3v4tizss6yyNd-CT5RHPM';
-export const CHAT_ID: string = '5990528199';
-
 // SSH
 export const SSH_SERVER: string = '100.78.61.25';
 

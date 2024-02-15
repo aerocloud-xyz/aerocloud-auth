@@ -1,7 +1,7 @@
 const { Client } = require("@elastic/elasticsearch");
 const APM = require('elastic-apm-node')
 const constants = require("./constants");
-const log = async (message, level) => {
+const log = async (message: string, level: string) => {
   // Instantiate the client with an API key
 /*   const client = new Client({
     node: constants.ELASTIC_ENDPOINT,

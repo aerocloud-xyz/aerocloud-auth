@@ -4,7 +4,6 @@ import { User, IUser } from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import * as constants from "../constants";
-import sendNotification from "../notification";
 import saveSession from "../sessionSave";
 
 const userrouter: Router = express.Router();
@@ -49,7 +48,6 @@ userrouter.post("/register", (req: Request, res: Response) => {
           newUser
             .save()
             .then((value) => {
-              sendNotification(`Succesfully registered user: ${newUser.name}!`);
               return res.status(200).json(newUser.toJSON());
             })
             .catch((error) => {
@@ -93,7 +91,6 @@ userrouter.post("/login", (req: Request, res: Response) => {
         );
         // TODO: Save the session
         saveSession(sessionToken, "1.1.1.1", user.userid, user.role);
-        sendNotification(`Succesfully logged in user: ${user.name}!`);
         return res.status(200).json({ token: sessionToken });
       } else {
         return res.status(401).json({ error: "Wrong password" });
@@ -179,9 +176,6 @@ userrouter.post("/updateUsername", (req: Request, res: Response) => {
               if (!user) {
                 return res.status(500).json({ error: "user is null" });
               } else {
-                sendNotification(
-                  `User ${user.name} changed their username to ${newusername}`
-                );
                 return res.status(200).json({ status: "Username changed" });
               }
             }

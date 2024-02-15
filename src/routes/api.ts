@@ -3,7 +3,6 @@ import { Router } from 'express';
 import {User, IUser} from "../models/user";
 import jwt from "jsonwebtoken";
 import * as constants from "../constants";
-import sendNotification from "../notification";
 
 const apirouter: Router = express.Router();
 
@@ -37,7 +36,6 @@ apirouter.post("/getUsers", (req: Request, res: Response) => {
 });
 
 apirouter.get("/", (req: Request, res: Response) => {
-    sendNotification("API Status checked-OK");
     console.log(`API status checked with good result`, 'INFO');
     res.status(200).json({ status: "API OK" });
 });
