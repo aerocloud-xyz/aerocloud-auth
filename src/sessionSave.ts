@@ -1,5 +1,4 @@
 import redis from 'redis';
-import { REDIS_CREDS } from './constants';
 
 const saveSession = async (token: string, ipaddress: string, userid: string, role: string) => {
     const sessionObj = {
@@ -12,7 +11,7 @@ const saveSession = async (token: string, ipaddress: string, userid: string, rol
     try {
         const key = userid;
         const client = redis.createClient({
-            url: `rediss://${REDIS_CREDS}@eu2-willing-malamute-30693.upstash.io:30693`
+            url: `rediss://${process.env.REDIS_CREDS}@eu2-willing-malamute-30693.upstash.io:30693`
         });
         client.on("error", (err) => {
             throw err;

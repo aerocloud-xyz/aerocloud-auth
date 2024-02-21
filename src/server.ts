@@ -1,4 +1,4 @@
-import * as constants from "./constants";
+import { JWT_SECRET, makeid } from "./constants";
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
 import userrouter from "./routes/user"
@@ -6,12 +6,13 @@ import apirouter from "./routes/api"
 import morgan from "morgan";
 import cors from "cors";
 import http from 'http';
-
+import dotenv from 'dotenv';
 const app = express();
+dotenv.config();
 
 // Mongoose
 mongoose
-  .connect(`mongodb+srv://${constants.MONGO_USER}:${constants.MONGO_PASSWORD}@${constants.MONGO_SERVER}/?retryWrites=true&w=majority`, {
+  .connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_SERVER}/?retryWrites=true&w=majority`, {
   })
   .then(() => console.log("Connected to database", "INFO"))
   .catch((err) => {
@@ -40,4 +41,6 @@ const httpServer = http.createServer(app);
 
 httpServer.listen(port, () => {
   console.log(`HTTP server listening on ${port}`);
+  makeid();
+  console.log(`This time JWT_SECRET is ${JWT_SECRET}`)
 });
